@@ -1,4 +1,15 @@
 # Simple Rest End point
 
-- Will be deployed using spinnaker
-- Will use Cobra for easier flags
+ Simply runs the docker image
+
+ ```bash
+ docker run --env HTTP_PORT=8181 -i -t --rm -p 8181:8181 spinnaker:v1.0
+ ```
+
+## Console
+
+ ![](./images/console.png)
+
+ ## Ping
+
+ ![](./images/ping.png)
