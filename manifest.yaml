@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: spinnaker-hellow
+  name: spinnaker-hellow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spinnaker-hellow
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: spinnaker-hellow
+    spec:
+      containers:
+      - image: samarthya/spinnaker:v1.0
+        name: spinnaker-hellow-pod
+          ports:
+          - containerPort: 8181
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spinnaker-hellow
+spec:
+  selector:
+    app: spinnaker-hellow
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8181
+      targetPort: 8181
