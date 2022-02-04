@@ -15,13 +15,16 @@ func init() {
 
 }
 
+// main function
 func main() {
+	// echo server
 	e := echo.New()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
 	e.GET("/", func(c echo.Context) error {
+		log.Println("`/` invoked")
 		return c.HTML(http.StatusOK, "Hello, Docker! <3")
 	})
 

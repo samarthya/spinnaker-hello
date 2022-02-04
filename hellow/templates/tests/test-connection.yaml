@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "hellow.fullname" . }}-test-connection"
+  labels:
+    {{- include "hellow.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "hellow.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
