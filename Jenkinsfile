@@ -30,7 +30,7 @@ podTemplate(yaml: '''
     def buildNumber = env.BUILD_NUMBER
 
     stage('Get a Golang project') {
-      git url: 'https://github.gwd.broadcom.net/ss670121/spinnaker-hellow', branch: 'main', credentialsId: 'pat-ss670121'
+      git url: 'https://github.com/samarthya/spinnaker-hello.git', branch: 'main', credentialsId: 'github-samarthya'
       container('golang'){
         stage('Build a Go project') {
           sh '''
