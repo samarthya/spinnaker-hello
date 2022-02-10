@@ -45,3 +45,118 @@ func hello(c echo.Context) error {
  ## Ping
 
  ![](./images/ping.png)
+
+
+ /* pipeline {
+  environment {
+    imagename = "samarthya/spinnaker-hellow"
+    registryCredential = 'docker-samarthya'
+    dockerImage = ''
+  }
+  
+  agent {
+    kubernetes {
+      yaml '''
+        apiVersion: v1
+        kind: Pod
+        spec:
+          containers:
+          - name: golang
+            image: golang:latest
+            command:
+            - cat
+            tty: true
+      '''
+    }
+  }
+
+
+  stages {
+    stage('Clone & Build') {
+      steps {
+        container('goalng'){
+          sh 'echo hello'
+        }
+          // echo 'git clone'
+          // git([url: 'https://github.gwd.broadcom.net/ss670121/spinnaker-hellow', branch: 'main', credentialsId: 'pat-ss670121'])
+          // sh '''
+          // ls
+          // go build -o bin/spinnaker-hellow .
+          // '''
+      }
+    }
+
+  }
+}
+*/
+
+
+
+/*
+pipeline {
+    environment {
+      imagename = "samarthya/spinnaker-hellow"
+      registryCredential = 'docker-samarthya'
+      dockerImage = ''
+    }
+
+    agent none
+    
+    stages {
+      
+      stage('Cloning Git') {
+          agent { label 'GOLANG-AGENT' }
+        steps {
+          echo 'git clone'
+          git([url: 'https://github.gwd.broadcom.net/ss670121/spinnaker-hellow', branch: 'main', credentialsId: 'pat-ss670121'])
+        }
+      }
+      
+      stage('Build Binary') {
+          agent { label 'GOLANG-AGENT' }
+        steps {
+          echo 'go build'
+          script{
+            go version
+            go build -o spinnaker-hellow ./
+          }
+        }
+      }
+      
+      stage('Building image') {
+          agent {
+              label 'DOCKER-AGENT'
+        }
+        steps{
+          script {
+            dockerImage = docker.build imagename
+          }
+        }
+      }
+      
+      stage('Deploy Image') {
+          agent {
+              label 'DOCKER-AGENT'
+        }
+        steps{
+          script {
+            docker.withRegistry( '', registryCredential ) {
+              dockerImage.push("$BUILD_NUMBER")
+              dockerImage.push('latest')
+            }
+          }
+        }
+      }
+      
+      stage('Remove Unused docker image') {
+          agent {
+              label 'DOCKER-AGENT'
+        }
+        steps{
+          sh "docker rmi $imagename:$BUILD_NUMBER"
+          sh "docker rmi $imagename:latest"
+        }
+      }
+    }
+  }
+  */
