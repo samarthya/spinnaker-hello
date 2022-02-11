@@ -3,25 +3,27 @@ podTemplate(yaml: '''
     kind: Pod
     spec:
       volumes:
-      - name: dockersock
-        hostPath:
-          path: /var/run/docker.sock
+      - name: kaniko-secret
+        secret:
+          secretName: regcred
+          items:
+          - key: .dockerconfigjson
+            path: config.json
       containers:
       - name: golang
         image: golang:latest
         command:
-        - sleep
-        args:
-        - 99d
-      - name: docker
-        image: docker:latest
-        volumeMounts:
-          - name: dockersock
-            mountPath: /var/run/docker.sock
+        - cat
+        tty: true
+      - name: kaniko
+        image: gcr.io/kaniko-project/executor:debug
         command:
-        - sleep
-        args:
-        - 99d
+        - cat
+        tty: true
+        volumeMounts:
+          - name: kaniko-secret
+            mountPath: /kaniko/.docker
+        
         
 ''') {
   node(POD_LABEL) {
@@ -42,15 +44,17 @@ podTemplate(yaml: '''
     }
 
     stage('docker image build') {
-      container('docker'){
+      container('kaniko'){
         stage('build image') {
-          script {
-            dockerImage = docker.build imageName
-          }
+          sh '''
+          executor --help
+          ls -als
+          '''
+          sh "/kaniko/executor --context `pwd`  --dockerfile `pwd`/Dockerfile --destination=${imageName}:${buildNumber} --destination=${imageName}:latest"
         }
       }
     }
-
+/**
     stage('docker image push') {
       container('docker'){
         stage('push image') {
@@ -62,7 +66,7 @@ podTemplate(yaml: '''
           }
         }
       }
-    }
+    }**/
 
   }
 }
