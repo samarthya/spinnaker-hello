@@ -9,30 +9,30 @@ spec:
           - key: ".dockerconfigjson"
             path: "config.json"
   containers:
-    - name: "golang"
-      image: golang:latest
-      resources:
-        limits:
-          memory: "128Mi"
-          cpu: "500m"
-        requests:
-          memory: "64Mi"
-          cpu: "250m"
-      command:
-        - "cat"
-      tty: true
-    - name: knaiko
+    - name: "kaniko"
       image: "gcr.io/kaniko-project/executor:debug"
       resources:
         limits:
-          memory: "128Mi"
-          cpu: "500m"
+          memory: "2Gi"
+          cpu: "2"
         requests:
-          memory: "64Mi"
-          cpu: "250m"
+          memory: "1GI"
+          cpu: "1"
       command:
         - cat
       tty: true
       volumeMounts:
-        - name: kaniko-secret
+        - name: "kaniko-secret"
           mountPath: "/kaniko/.docker"
+    - name: "golang"
+      image: golang:latest
+      resources:
+        limits:
+          memory: "2Gi"
+          cpu: "500m"
+        requests:
+          memory: "1Gi"
+          cpu: "250m"
+      command:
+        - "cat"
+      tty: true
