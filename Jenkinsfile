@@ -1,31 +1,4 @@
-podTemplate(yaml: '''
-    apiVersion: v1
-    kind: Pod
-    spec:
-      volumes:
-      - name: kaniko-secret
-        secret:
-          secretName: regcred
-          items:
-          - key: .dockerconfigjson
-            path: config.json
-      containers:
-      - name: golang
-        image: golang:latest
-        command:
-        - cat
-        tty: true
-      - name: kaniko
-        image: gcr.io/kaniko-project/executor:debug
-        command:
-        - cat
-        tty: true
-        volumeMounts:
-          - name: kaniko-secret
-            mountPath: /kaniko/.docker
-        
-        
-''') {
+podTemplate(yaml: readFile(file: 'node.yaml')) {
   node(POD_LABEL) {
     // Define the image name
     def imageName = "bhanuni/spinnaker-hellow"

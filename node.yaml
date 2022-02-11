@@ -2,23 +2,37 @@ apiVersion: v1
 kind: Pod
 spec:
   volumes:
-    - name: kaniko-secret
+    - name: "kaniko-secret"
       secret:
         secretName: regcred
         items:
-          - key: .dockerconfigjson
-            path: config.json
+          - key: ".dockerconfigjson"
+            path: "config.json"
   containers:
-    - name: golang
+    - name: "golang"
       image: golang:latest
+      resources:
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+        requests:
+          memory: "64Mi"
+          cpu: "250m"
       command:
-        - cat
+        - "cat"
       tty: true
-    - name: kaniko
-      image: gcr.io/kaniko-project/executor:debug
+    - name: knaiko
+      image: "gcr.io/kaniko-project/executor:debug"
+      resources:
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+        requests:
+          memory: "64Mi"
+          cpu: "250m"
       command:
         - cat
       tty: true
       volumeMounts:
         - name: kaniko-secret
-          mountPath: /kaniko/.docker
+          mountPath: "/kaniko/.docker"
