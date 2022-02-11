@@ -28,7 +28,7 @@ podTemplate(yaml: '''
 ''') {
   node(POD_LABEL) {
     // Define the image name
-    def imageName = "samarthya/spinnaker"
+    def imageName = "bhanuni/spinnaker-hellow"
     def buildNumber = env.BUILD_NUMBER
 
     stage('Get a Golang project') {
@@ -54,20 +54,6 @@ podTemplate(yaml: '''
         }
       }
     }
-/**
-    stage('docker image push') {
-      container('docker'){
-        stage('push image') {
-          script {
-            docker.withRegistry('', 'docker-samarthya') {
-              dockerImage.push("${buildNumber}")
-              dockerImage.push('latest')
-            }
-          }
-        }
-      }
-    }**/
-
   }
 }
 
