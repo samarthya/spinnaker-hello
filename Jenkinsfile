@@ -30,7 +30,7 @@ podTemplate(yaml: '''
     def buildNumber = env.BUILD_NUMBER
 
     stage('Get a Golang project') {
-      git url: 'https://github.com/samarthya/spinnaker-hello.git', branch: 'master', credentialsId: 'github-samarthya'
+      git url: 'https://github.com/samarthya/spinnaker-hello.git', branch: 'main', credentialsId: 'github-samarthya'
       container('golang'){
         stage('Build a Go project') {
           sh '''
@@ -45,10 +45,9 @@ podTemplate(yaml: '''
     stage('docker image build') {
       container('kaniko'){
         stage('build image') {
-           if (env.BRANCH_NAME ==~ /master/) {
+           if (env.BRANCH_NAME == 'main') {
               sh '''
-              executor --help
-              ls -als
+              echo Hello from $POD_CONTAINER
               '''
               sh "/kaniko/executor --context `pwd`  --dockerfile `pwd`/Dockerfile --destination=${imageName}:${buildNumber} --destination=${imageName}:latest"
           }
