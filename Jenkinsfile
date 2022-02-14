@@ -34,8 +34,9 @@ podTemplate(yaml: '''
       container('golang'){
         stage('Build a Go project') {
           sh '''
+            echo hello from $POD_CONTAINER
             mkdir -p /go/src/github.com/spinnaker-hellow
-            go version
+            go build -o bin/spinnaker-hellow .
           '''
         }
       }
@@ -44,14 +45,13 @@ podTemplate(yaml: '''
     stage('docker image build') {
       container('kaniko'){
         stage('build image') {
-          when {
-            branch 'master'
+           if (env.BRANCH_NAME ==~ /master/) {
+              sh '''
+              executor --help
+              ls -als
+              '''
+              sh "/kaniko/executor --context `pwd`  --dockerfile `pwd`/Dockerfile --destination=${imageName}:${buildNumber} --destination=${imageName}:latest"
           }
-          sh '''
-          executor --help
-          ls -als
-          '''
-          sh "/kaniko/executor --context `pwd`  --dockerfile `pwd`/Dockerfile --destination=${imageName}:${buildNumber} --destination=${imageName}:latest"
         }
       }
     }
