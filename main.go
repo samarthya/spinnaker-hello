@@ -10,27 +10,37 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+const (
+ Hellow = "Hello, Docker! <3"
+)
 func init() {
 	log.Println(" initializing the application FN:init ")
-
 }
+
+func rootHandler(c echo.Context) error {
+	return c.HTML(http.StatusOK, Hellow)
+}
+
+func pingHandler(c echo.Context) error {
+	return c.JSON(http.StatusOK, struct{ Status string }{Status: "OK"})
+}
+
 
 // main function
 func main() {
-	// echo server
 	e := echo.New()
 
+	/**
+	 * Middleware is a function chained in the HTTP request-response cycle with access to
+	 * Echo#Context which it uses to perform a specific action, for example, logging every
+	 * request or limiting the number of requests.
+	 */
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("/", func(c echo.Context) error {
-		log.Println("`/` invoked")
-		return c.HTML(http.StatusOK, "Hello, Docker! <3")
-	})
+	e.GET("/", rootHandler)
 
-	e.GET("/ping", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, struct{ Status string }{Status: "OK"})
-	})
+	e.GET("/ping", pingHandler)
 
 	httpPort := os.Getenv("HTTP_PORT")
 	if httpPort == "" {
