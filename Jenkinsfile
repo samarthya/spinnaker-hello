@@ -23,8 +23,6 @@ podTemplate(yaml: '''
         volumeMounts:
           - name: kaniko-secret
             mountPath: /kaniko/.docker
-        
-        
 ''') {
   node(POD_LABEL) {
     // Define the image name
@@ -32,7 +30,7 @@ podTemplate(yaml: '''
     def buildNumber = env.BUILD_NUMBER
 
     stage('Get a Golang project') {
-      git url: 'https://github.com/samarthya/spinnaker-hello.git', branch: 'main', credentialsId: 'github-samarthya'
+      git url: 'https://github.com/samarthya/spinnaker-hello.git', branch: 'master', credentialsId: 'github-samarthya'
       container('golang'){
         stage('Build a Go project') {
           sh '''
@@ -46,6 +44,9 @@ podTemplate(yaml: '''
     stage('docker image build') {
       container('kaniko'){
         stage('build image') {
+          when {
+            branch 'master'
+          }
           sh '''
           executor --help
           ls -als
