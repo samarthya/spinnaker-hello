@@ -28,10 +28,16 @@ podTemplate(yaml: '''
     // Define the image name
     def imageName = "bhanuni/spinnaker-hellow"
     def buildNumber = env.BUILD_NUMBER
+    def branchName = 'main'
 
     stage('Get a Golang project') {
-      git url: 'https://github.com/samarthya/spinnaker-hello.git', branch: 'main', credentialsId: 'github-samarthya'
+      git url: 'https://github.com/samarthya/spinnaker-hello.git', branch: branchName, credentialsId: 'github-samarthya'
       container('golang'){
+        stage('Test the project') {
+          sh '''
+            go test
+          '''
+        }
         stage('Build a Go project') {
           sh '''
             echo hello from $POD_CONTAINER
@@ -42,14 +48,16 @@ podTemplate(yaml: '''
       }
     }
 
-    stage('docker image build') {
-      container('kaniko'){
-        stage('build image') {
-           if (env.BRANCH_NAME == 'main') {
+    if (currentBuild.currentResult == 'SUCCESS') {
+      stage('docker image build') {
+        container('kaniko'){
+          stage('build image') {
+            if (branchName == 'main') {
               sh '''
               echo Hello from $POD_CONTAINER
               '''
               sh "/kaniko/executor --context `pwd`  --dockerfile `pwd`/Dockerfile --destination=${imageName}:${buildNumber} --destination=${imageName}:latest"
+            }
           }
         }
       }
