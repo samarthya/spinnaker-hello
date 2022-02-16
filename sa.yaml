@@ -1,0 +1,14 @@
+apiVersion: v1
+imagePullSecrets:
+- name: samarthya-docker
+kind: ServiceAccount
+metadata:
+  creationTimestamp: "2022-02-15T10:31:38Z"
+  name: default
+  namespace: spinnaker
+  resourceVersion: "12585"
+  uid: 3f65b017-23cd-4a25-a9d7-8f42f7c690a6
+secrets:
+- name: default-token-zbnh4
+imagePullSecrets:
+- name: "samarthya-docker"

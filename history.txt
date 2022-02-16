@@ -1,0 +1,16 @@
+ 1005  k get svc
+ 1006  k edit svc
+ 1007  helm package
+ 1008  helm package ./hellow
+ 1009  devspace deploy
+ 1010  devspace open
+ 1011  k3d cluster list
+ 1012  k3d cluster create -h
+ 1013  k3d cluster create spinnaker-1
+ 1014  k3d cluster list
+ 1015  kubectl config 
+ 1016  kubectl config  get-contexts
+ 1017  k config use-context k3d-spinnaker
+ 1018  k get pods
+ 1019  k get ns
+ 1020  pwd
