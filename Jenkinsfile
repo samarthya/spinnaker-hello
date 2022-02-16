@@ -35,7 +35,8 @@ podTemplate(yaml: '''
     def buildNumber = env.BUILD_NUMBER
     def branchName = 'main'
     def chartValue = 'hellow/values.yaml'
-
+    def chartReleaseName = 'spinnaker-hellow-pipline'
+    def chartName = "hellow-2.0.0.tgz"
 
     stage('Get a Golang project') {
       git url: 'https://github.com/samarthya/spinnaker-hello.git', branch: branchName, credentialsId: 'github-samarthya'
@@ -65,15 +66,7 @@ podTemplate(yaml: '''
     }
 
     if (currentBuild.currentResult == 'SUCCESS') {
-      stage('New Chart') {
-        container('helm') {
-          sh """
-          helm version
-          helm package hellow
-          """
-        }
-      }
-      
+
       stage('docker image build') {
         container('kaniko'){
           stage('build image') {
@@ -86,6 +79,38 @@ podTemplate(yaml: '''
           }
         }
       }
+
+      stage('New Chart') {
+        container('helm') {
+          stage('Package the new chart') {
+            sh """
+            helm version
+            helm package ./hellow
+            """
+          }
+
+          try {
+            stage('Uninstall chart'){
+              sh """
+              echo 'Deleting the chart'
+              helm delete ${chartReleaseName} -n spinnaker
+              """
+            }
+          }catch (e) {
+            build_ok = false
+            echo e.toString() 
+          }
+          
+          stage('Install the chart') {
+            sh """
+            echo 'Deploying the chart'
+            helm install ${chartReleaseName} -n spinnaker ${chartName} --set image.repository=${imageName} --set image.tag=${buildNumber}
+            """
+          }
+        }
+      }
+      
+
     }
   }
 }
