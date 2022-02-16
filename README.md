@@ -47,3 +47,15 @@ func hello(c echo.Context) error {
  ## Ping
 
  ![](./images/ping.png)
+
+# Points to remember
+
+Configrue the secret `docker-registry`
+
+```bash
+> k get secret                
+NAME                                                     TYPE                                  DATA   AGE
+samarthya-docker                                         kubernetes.io/dockerconfigjson        1      20h
+```
+
+You can create by using `kubectl create secret docker-registry ...`
