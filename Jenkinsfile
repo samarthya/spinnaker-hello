@@ -10,6 +10,11 @@ podTemplate(yaml: '''
           - key: .dockerconfigjson
             path: config.json
       containers:
+      - name: helm
+        image: alpine/helm:latest
+        command:
+        - cat
+        tty: true
       - name: golang
         image: golang:latest
         command:
@@ -29,6 +34,8 @@ podTemplate(yaml: '''
     def imageName = "bhanuni/spinnaker-hellow"
     def buildNumber = env.BUILD_NUMBER
     def branchName = 'main'
+    def chartValue = 'hellow/values.yaml'
+
 
     stage('Get a Golang project') {
       git url: 'https://github.com/samarthya/spinnaker-hello.git', branch: branchName, credentialsId: 'github-samarthya'
@@ -45,10 +52,28 @@ podTemplate(yaml: '''
             go build -o bin/spinnaker-hellow .
           '''
         }
+        stage('New Values') {
+          script {
+            def data = readYaml file: chartValue
+            data.image.tag = buildNumber
+            sh "echo $data"
+            sh "rm $chartValue"
+            writeYaml file: chartValue, data: data
+          }
+        }
       }
     }
 
     if (currentBuild.currentResult == 'SUCCESS') {
+      stage('New Chart') {
+        container('helm') {
+          sh """
+          helm version
+          helm package hellow
+          """
+        }
+      }
+      
       stage('docker image build') {
         container('kaniko'){
           stage('build image') {

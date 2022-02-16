@@ -10,6 +10,6 @@ ENV HTTP_PORT=8181
 
 FROM gcr.io/distroless/base-debian10
 COPY --from=GOLANG /server /server
-EXPOSE ${PORT:-8181}/tcp
+EXPOSE ${HTTP_PORT:-8181}/tcp
 # USER ${USER:-root}
 ENTRYPOINT [ "/server"]
