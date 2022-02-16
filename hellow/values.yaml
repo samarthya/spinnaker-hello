@@ -4,6 +4,9 @@
 
 replicaCount: 1
 
+environment:
+  httpPort: 8181
+
 image:
   repository: samarthya/spinnaker
   pullPolicy: IfNotPresent

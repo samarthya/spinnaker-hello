@@ -32,9 +32,13 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "hellow.fullname" . }}
+                optional: false
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: {{ .Values.environment.httpPort}}
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

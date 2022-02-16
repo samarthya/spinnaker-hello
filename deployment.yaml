@@ -19,7 +19,7 @@ spec:
       - image: samarthya/spinnaker:v1.0
         name: spinnaker-hellow
           ports:
-          - containerPort: 818
+          - containerPort: 8181
 ---
 apiVersion: v1
 kind: Service
